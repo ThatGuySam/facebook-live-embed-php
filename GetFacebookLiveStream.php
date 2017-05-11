@@ -4,8 +4,9 @@
 
 class GetFacebookLiveStream
 {
-	public $channelId;
-	public $API_Key;
+	public $pageID;
+	public $APP_Id;
+	public $APP_Secret;
 
 	public $jsonResponse; // pure server response
 	public $objectResponse; // response decoded as object
