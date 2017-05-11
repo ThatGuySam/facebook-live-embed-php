@@ -21,9 +21,22 @@ function debug( $thing ) {
 
 }
 
+
+use phpFastCache\CacheManager;
+
+// Setup File Path on your config files
+CacheManager::setDefaultConfig(array(
+    "path" => __DIR__ . '/cache', // or in windows "C:/tmp/"
+));
+
+// In your class, function, you can call the Cache
+global $InstanceCache;
+$InstanceCache = CacheManager::getInstance('files');
+
 //Cache Times
-define("ONE_DAY", 24*3600);
 define("ONE_HOUR", 3600);
+define("ONE_DAY", 24 * ONE_HOUR);
+define("ONE_YEAR", ONE_DAY * 365);
 
 
 
