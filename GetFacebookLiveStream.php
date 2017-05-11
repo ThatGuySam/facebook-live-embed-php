@@ -15,6 +15,7 @@ class GetFacebookLiveStream
 	public $isLive; // true if there is a live streaming at the channel
 
 	public $queryData; // query values as an array
+	public $getTokenAddress;
 	public $getAddress; // address to request GET
 	public $getQuery; // data to request, encoded
 
@@ -50,15 +51,14 @@ class GetFacebookLiveStream
 		$this->pageID = $PageID;
 		$this->APP_Id = $APP_Id;
 		$this->APP_Secret = $APP_Secret;
-		$this->access_token = $this->getFacebookToken()->objectResponse->access_token;
-
-		$this->requestPath = '/' . $this->pageID . '/videos?fields=live_status';
 
 		$this->part = "id,snippet";
 		$this->eventType = "live";
 		$this->type = "video";
 
-		$this->getAddress = "https://graph.facebook.com/oauth/access_token?";
+		$this->getTokenAddress = "https://graph.facebook.com/oauth/access_token?";
+
+		$this->videoPluginAddress = "https://www.facebook.com/plugins/video.php?";
 
 		$this->default_embed_width = "560";
 		$this->default_embed_height = "315";
@@ -81,39 +81,54 @@ class GetFacebookLiveStream
 		  'default_graph_version' => 'v2.9',
 	  ]);
 
+		$this->access_token = $this->getFacebookToken()->objectResponse->access_token;
+
 		$this->fb->setDefaultAccessToken( $this->access_token );
 
-		return $this->getFacebookRequest();
+		$this->queryData = array(
+			"fields" => "live_status,description,picture,from,created_time,permalink_url",
+		);
+		$this->getQuery = http_build_query($this->queryData); // transform array of data in url query
 
-		// $this->queryData = array(
-		// 	"part" => $this->part,
-		// 	"pageID" => $this->pageID,
-		// 	"eventType" => $this->eventType,
-		// 	"type" => $this->type,
-		// 	"key" => $this->APP_Id,
-		// );
-		// $this->getQuery = http_build_query($this->queryData); // transform array of data in url query
-		// $this->queryString = $this->getAddress . $this->getQuery;
-		//
-		// $this->jsonResponse = file_get_contents($this->queryString); // pure server response
-		// $this->objectResponse = json_decode($this->jsonResponse); // decode as object
-		// $this->arrayResponse = json_decode($this->jsonResponse, TRUE); // decode as array
-		//
-		// $this->isLive();
-		// if($this->isLive)
-		// {
-		// 	$this->live_video_id = $this->objectResponse->items[0]->id->videoId;
-		// 	$this->live_video_title = $this->objectResponse->items[0]->snippet->title;
-		// 	$this->live_video_description = $this->objectResponse->items[0]->snippet->description;
-		//
-		// 	$this->live_video_published_at = $this->objectResponse->items[0]->snippet->publishedAt;
-		// 	$this->live_video_thumb_default = $this->objectResponse->items[0]->snippet->thumbnails->default->url;
-		// 	$this->live_video_thumb_medium = $this->objectResponse->items[0]->snippet->thumbnails->medium->url;
-		// 	$this->live_video_thumb_high = $this->objectResponse->items[0]->snippet->thumbnails->high->url;
-		//
-		// 	$this->channel_title = $this->objectResponse->items[0]->snippet->channelTitle;
-		// 	$this->embedCode();
-		// }
+		$this->liveStreamsRequestPath = '/' . $this->pageID . '/videos?' . $this->getQuery;
+
+		$this->liveStreamResponse = $this->getFacebookRequest( $this->liveStreamsRequestPath );
+
+		$this->liveStreamIds = array();
+		$this->vodStreamIds = array();
+
+		foreach( $this->liveStreamResponse as $graphNode ){
+
+			$live_status = $graphNode->getField('live_status');
+			$id = $graphNode->getField('id');
+
+			if( $live_status == "LIVE" ){
+				$this->liveStreams[] = $graphNode;
+			} else if( $live_status == "VOD" ){
+				$this->vodStreams[] = $graphNode;
+			}
+
+		}
+
+		$this->isLive();
+		if($this->isLive)
+		{
+			$this->live_video_id = $this->liveStreams[0]->getField('id');
+			$this->live_video_description = $this->liveStreams[0]->getField('description');
+
+			$this->live_video_published_at = $this->liveStreams[0]->getField('created_time');
+			$this->live_video_thumb_default = $this->liveStreams[0]->getField('picture');
+			// $this->live_video_thumb_medium = $this->objectResponse->items[0]->snippet->thumbnails->medium->url;
+			// $this->live_video_thumb_high = $this->objectResponse->items[0]->snippet->thumbnails->high->url;
+			//
+			$this->channel_title = $this->liveStreams[0]->getField('from')->getField('name');
+
+			$this->live_video_url = 'https://www.facebook.com' . $this->liveStreams[0]->getField('permalink_url');
+
+			$this->embedCode();
+		}
+
+		//return $this->liveStreamResponse;
 	}
 
 	public function requestFacebookToken()
@@ -129,7 +144,7 @@ class GetFacebookLiveStream
 		);
 
 		$this->getQuery = http_build_query($this->queryData); // transform array of data in url query
-		$this->queryString = $this->getAddress . $this->getQuery;
+		$this->queryString = $this->getTokenAddress . $this->getQuery;
 
 		$token->jsonResponse = file_get_contents($this->queryString); // pure server response
 		$token->objectResponse = json_decode($token->jsonResponse); // decode as object
@@ -143,13 +158,9 @@ class GetFacebookLiveStream
 
 		global $InstanceCache;
 
-		$is_flushing = false;//isFlushing();
+		$is_flushing = isFlushing("token");
 
-		/**
-		 * Try to get $products from Caching First
-		 * product_page is "identity keyword";
-		 */
-		$CachedString = $InstanceCache->getItem($key . "_fb_token");
+		$CachedString = $InstanceCache->getItem( "fb_token_" . $key );
 
 		if ( is_null($CachedString->get()) || $is_flushing !== false ) {
 
@@ -171,12 +182,11 @@ class GetFacebookLiveStream
 		return $output;
 	}
 
-
 	public function requestFacebookResource( $path )
 	{
 
 		try {
-		  $response = $this->fb->get( $path );
+		  $response = $this->fb->get( $path )->getGraphEdge();
 		} catch(Facebook\Exceptions\FacebookResponseException $e) {
 		  // When Graph returns an error
 		  echo 'Graph returned an error: ' . $e->getMessage();
@@ -187,27 +197,29 @@ class GetFacebookLiveStream
 		  exit;
 		}
 
+
+
 		return $response;
 
 	}
 
 
-	public function getFacebookRequest()
+	public function getFacebookRequest( $path, $expires = 60 )
 	{
 
 		global $InstanceCache;
 
 		$is_flushing = isFlushing();
 
-		$key = filter_var( $this->requestPath, FILTER_SANITIZE_STRING );
+		$key = filter_var( $path, FILTER_SANITIZE_STRING );
 
 		$CachedString = $InstanceCache->getItem("fb_request_" . $key);
 
 		if ( is_null($CachedString->get()) || $is_flushing !== false ) {
 
-			$requested_data = $this->requestFacebookResource( $this->requestPath );
+			$requested_data = $this->requestFacebookResource( $path );
 
-			$CachedString->set($requested_data)->expiresAfter( 60 );//in seconds, also accepts Datetime
+			$CachedString->set($requested_data)->expiresAfter( $expires );//in seconds, also accepts Datetime
 			$InstanceCache->save($CachedString); // Save the cache item just like you do with doctrine and entities
 
 	    $output = $CachedString->get();
@@ -231,7 +243,7 @@ class GetFacebookLiveStream
 			$this->queryIt();
 		}
 
-		$live_items = count($this->objectResponse->items);
+		$live_items = count( $this->liveStreams );
 
 		if($live_items>0)
 		{
@@ -262,6 +274,23 @@ class GetFacebookLiveStream
 
 		if( $refill_code == true ) { $this->embedCode(); }
 	}
+
+	public function getEmbedAddress( $autoplay = true )
+	{
+
+		$this->embedAddressQueryData = array(
+			"href" => $this->live_video_url,
+			"show_text" => 0,
+			"autoplay" => $autoplay,
+			"allowfullscreen" => 1,
+			"show_captions" => 0
+		);
+		$this->getembedAddressQuery = http_build_query($this->embedAddressQueryData); // transform array of data in url query
+
+		return $this->videoPluginAddress . $this->getembedAddressQuery;
+
+	}
+
 
 	public function embedCode()
 	{

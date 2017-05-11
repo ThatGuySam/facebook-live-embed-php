@@ -48,13 +48,24 @@ function isTesting(){
 
 }
 
-function isFlushing(){
+function isFlushing( $this = false ){
 
-	if( isset( $_GET['flush'] ) ) return true;
+	if( !isset( $_GET['flush'] ) ) return false;
 
-	if( !isset( $_GET['cache'] ) ) return false;
+	$flushing_default = ( empty( $_GET['flush'] ) );
 
-	return $_GET['cache']===FALSE ? FALSE : filter_var($_GET['cache'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+	$flushing_this = ( $this == $_GET['flush'] );
+
+
+	// Default Flush( not specific )
+	if( !$this && $flushing_default ) {
+		return true;
+	// Specific flush keyword
+	} else if( $flushing_this ) {
+		return true;
+	} else {
+		return false;
+	}
 
 }
 

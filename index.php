@@ -9,7 +9,7 @@ require_once __DIR__ . '/GetFacebookLiveStream.php';
 
 $FacebookLive = new GetFacebookLiveStream(PAGE_ID, FB_APP_ID, FB_APP_SECRET);
 
-debug( $FacebookLive->queryIt() );
+debug( $FacebookLive->getEmbedAddress() );
 
 
 ?><!doctype html>
@@ -50,6 +50,6 @@ debug( $FacebookLive->queryIt() );
 
 </head>
 <body>
-  <iframe frameborder="0" src="https://player.vimeo.com/video/216945799?title=0&byline=0&portrait=0&color=d8d8d8&api=1&player_id=frame" data-php-live="" data-current-url="archive" data-live="" data-archive="https://player.vimeo.com/video/216945799?title=0&byline=0&portrait=0&color=d8d8d8&api=1&player_id=frame" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+  <iframe frameborder="0" src="<?= $FacebookLive->getEmbedAddress() ?>" data-php-live="" data-current-url="archive" data-live="" data-archive="https://player.vimeo.com/video/216945799?title=0&byline=0&portrait=0&color=d8d8d8&api=1&player_id=frame" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 </body>
 </html>
