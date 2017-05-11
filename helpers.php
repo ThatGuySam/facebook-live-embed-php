@@ -48,20 +48,20 @@ function isTesting(){
 
 }
 
-function isFlushing( $this = false ){
+function isFlushing( $id = false ){
 
 	if( !isset( $_GET['flush'] ) ) return false;
 
 	$flushing_default = ( empty( $_GET['flush'] ) );
 
-	$flushing_this = ( $this == $_GET['flush'] );
+	$flushing_id = ( $id == $_GET['flush'] );
 
 
 	// Default Flush( not specific )
-	if( !$this && $flushing_default ) {
+	if( !$id && $flushing_default ) {
 		return true;
 	// Specific flush keyword
-	} else if( $flushing_this ) {
+} else if( $flushing_id ) {
 		return true;
 	} else {
 		return false;
