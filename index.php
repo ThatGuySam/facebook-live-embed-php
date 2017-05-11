@@ -6,10 +6,6 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/GetFacebookLiveStream.php';
 
 
-// More Streams
-// https://www.facebook.com/livemap/
-
-
 
 $FacebookLive = new GetFacebookLiveStream(PAGE_ID, FB_APP_ID, FB_APP_SECRET);
 

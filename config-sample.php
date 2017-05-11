@@ -4,5 +4,6 @@
 	define("FB_APP_ID", "replace_me");
 	define("FB_APP_SECRET", "replace_me");
 
-
+	// Live Streams for testing
+	// https://www.facebook.com/livemap/
 	define("PAGE_ID", "replace_me");
