@@ -1,6 +1,8 @@
 <?php
 
-class EmbedYoutubeLiveStreaming
+// Like https://github.com/iacchus/youtube-live-embed
+
+class GetFacebookLiveStream
 {
 	public $channelId;
 	public $API_Key;
