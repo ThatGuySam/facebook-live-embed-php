@@ -2,10 +2,21 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/GetFacebookLiveStream.php';
 
- ?>
-<!doctype html>
+
+// More Streams
+// https://www.facebook.com/livemap/
+
+
+
+$FacebookLive = new GetFacebookLiveStream(PAGE_ID, FB_APP_ID, FB_APP_SECRET);
+
+debug( $FacebookLive->queryIt() );
+
+
+?><!doctype html>
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -24,19 +35,19 @@ require_once __DIR__ . '/GetFacebookLiveStream.php';
 		html {
 			margin: 0;
 			height: 100%;
-			overflow: hidden;
+			/*overflow: hidden;*/
 		}
 
 		iframe {
       width: 640px;
       height: 360px;
-      
-			position: absolute;
+
+			/*position: absolute;
 			left:0;
 			right:0;
 			bottom:0;
 			top:0;
-			border:0;
+			border:0;*/
 		}
 
 	</style>
