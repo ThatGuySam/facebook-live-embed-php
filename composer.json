@@ -1,0 +1,14 @@
+{
+    "name": "samcarlton/fb-live-detect",
+    "description": "Get current live stream from a page",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Sam Carlton",
+            "email": "sam@sam.lc"
+        }
+    ],
+    "require": {
+        "facebook/graph-sdk": "^5.5"
+    }
+}
