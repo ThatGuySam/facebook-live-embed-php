@@ -46,9 +46,9 @@ class GetFacebookLiveStream
 
 	public $channel_title;
 
-	public function __construct($PageID, $APP_Id, $APP_Secret, $autoQuery = true)
+	public function __construct($facebookPage, $APP_Id, $APP_Secret, $autoQuery = true)
 	{
-		$this->pageID = $PageID;
+		$this->facebookPage = $facebookPage;
 		$this->APP_Id = $APP_Id;
 		$this->APP_Secret = $APP_Secret;
 
@@ -84,6 +84,21 @@ class GetFacebookLiveStream
 		$this->access_token = $this->getFacebookToken()->objectResponse->access_token;
 
 		$this->fb->setDefaultAccessToken( $this->access_token );
+
+
+
+		if( isValidUrl( $this->facebookPage ) ){
+			$this->facebookPageUrlData = parse_url( $this->facebookPage );
+
+			// Break up path into parts
+			$path_exploded = explode( "/", $this->facebookPageUrlData['path'] );
+
+			$this->pageID = $path_exploded[1];
+			//debug( $path_exploded[1] );
+
+		} else if( is_numeric( $this->facebookPage ) ){
+			$this->pageID = $this->facebookPage;
+		}
 
 		$this->queryData = array(
 			"fields" => "live_status,description,picture,from,created_time,permalink_url",
