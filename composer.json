@@ -9,6 +9,7 @@
         }
     ],
     "require": {
-        "facebook/graph-sdk": "^5.5"
+        "facebook/graph-sdk": "^5.5",
+        "phpFastCache/phpFastCache": "^5.0"
     }
 }
