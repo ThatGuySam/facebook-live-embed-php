@@ -34,15 +34,15 @@ class GetFacebookLiveStream
 	public $embed_width;
 	public $embed_height;
 
-	public $live_video_id;
-	public $live_video_title;
-	public $live_video_description;
+	public $loaded_video_id;
+	public $loaded_video_title;
+	public $loaded_video_description;
 
-	public $live_video_publishedAt;
+	public $loaded_video_publishedAt;
 
-	public $live_video_thumb_default;
-	public $live_video_thumb_medium;
-	public $live_video_thumb_high;
+	public $loaded_video_thumb_default;
+	public $loaded_video_thumb_medium;
+	public $loaded_video_thumb_high;
 
 	public $channel_title;
 
@@ -111,22 +111,32 @@ class GetFacebookLiveStream
 		}
 
 		$this->isLive();
+
+		// Load up live video
 		if($this->isLive)
 		{
-			$this->live_video_id = $this->liveStreams[0]->getField('id');
-			$this->live_video_description = $this->liveStreams[0]->getField('description');
-
-			$this->live_video_published_at = $this->liveStreams[0]->getField('created_time');
-			$this->live_video_thumb_default = $this->liveStreams[0]->getField('picture');
-			// $this->live_video_thumb_medium = $this->objectResponse->items[0]->snippet->thumbnails->medium->url;
-			// $this->live_video_thumb_high = $this->objectResponse->items[0]->snippet->thumbnails->high->url;
-			//
-			$this->channel_title = $this->liveStreams[0]->getField('from')->getField('name');
-
-			$this->live_video_url = 'https://www.facebook.com' . $this->liveStreams[0]->getField('permalink_url');
-
-			$this->embedCode();
+			$this->loaded_video = $this->liveStreams[0];
+		// Else load up previous live stream
+		} else if( !empty( $this->vodStreams ) ){
+			$this->loaded_video = $this->vodStreams[0];
+		// Else load up newest video
+		} else {
+			$this->loaded_video = $this->liveStreamResponse[0];
 		}
+
+		$this->loaded_video_id = $this->loaded_video->getField('id');
+		$this->loaded_video_description = $this->loaded_video->getField('description');
+
+		$this->loaded_video_published_at = $this->loaded_video->getField('created_time');
+		$this->loaded_video_thumb_default = $this->loaded_video->getField('picture');
+		// $this->loaded_video_thumb_medium = $this->objectResponse->items[0]->snippet->thumbnails->medium->url;
+		// $this->loaded_video_thumb_high = $this->objectResponse->items[0]->snippet->thumbnails->high->url;
+		//
+		$this->channel_title = $this->loaded_video->getField('from')->getField('name');
+
+		$this->loaded_video_url = 'https://www.facebook.com' . $this->loaded_video->getField('permalink_url');
+
+		$this->embedCode();
 
 		//return $this->liveStreamResponse;
 	}
@@ -279,7 +289,7 @@ class GetFacebookLiveStream
 	{
 
 		$this->embedAddressQueryData = array(
-			"href" => $this->live_video_url,
+			"href" => $this->loaded_video_url,
 			"show_text" => 0,
 			"autoplay" => $autoplay,
 			"allowfullscreen" => 1,
@@ -300,7 +310,7 @@ class GetFacebookLiveStream
 <iframe
 	width="{$this->embed_width}"
 	height="{$this->embed_height}"
-	src="//www.youtube.com/embed/{$this->live_video_id}{$autoplay}"
+	src="//www.youtube.com/embed/{$this->loaded_video_id}{$autoplay}"
 	frameborder="0"
 	allowfullscreen>
 </iframe>
