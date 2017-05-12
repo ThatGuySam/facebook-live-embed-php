@@ -45,15 +45,11 @@ class GetFacebookLiveStream
 		$this->APP_Secret 		= isset( $args['app_secret'] ) ? $args['app_secret'] : 0;
 		$autoQuery 						= isset( $args['auto_query'] ) ? $args['auto_query'] : true;
 
-		$this->part = "id,snippet";
-		$this->eventType = "live";
-		$this->type = "video";
+		$this->embed_autoplay = false;//by default
 
 		$this->getTokenAddress = "https://graph.facebook.com/oauth/access_token?";
 
 		$this->videoPluginAddress = "https://www.facebook.com/plugins/video.php?";
-
-		$this->embed_autoplay = true;
 
 		if($autoQuery == true) { $this->queryIt(); }
 	}
@@ -90,9 +86,7 @@ class GetFacebookLiveStream
 			"fields" => "live_status,description,picture,from,created_time,permalink_url",
 		);
 		$this->getQuery = http_build_query($this->queryData); // transform array of data in url query
-
 		$this->liveStreamsRequestPath = '/' . $this->pageID . '/videos?' . $this->getQuery;
-
 		$this->liveStreamResponse = $this->getFacebookRequest( $this->liveStreamsRequestPath );
 
 		$this->liveStreams = array();
@@ -110,6 +104,9 @@ class GetFacebookLiveStream
 			}
 
 		}
+
+		// Autoplay if is stream is live
+		$this->embed_autoplay = $this->isLive();
 
 		$this->isLive();
 
@@ -266,13 +263,13 @@ class GetFacebookLiveStream
 		}
 	}
 
-	public function getEmbedAddress( $autoplay = true )
+	public function getEmbedAddress()
 	{
 
 		$this->embedAddressQueryData = array(
 			"href" => $this->loaded_video_url,
 			"show_text" => 0,
-			"autoplay" => $autoplay,
+			"autoplay" => $this->embed_autoplay,
 			"allowfullscreen" => 1,
 			"show_captions" => 0
 		);
