@@ -72,7 +72,6 @@ class GetFacebookLiveStream
 		$this->fb->setDefaultAccessToken( $this->access_token );
 
 
-
 		if( isValidUrl( $this->facebookPage ) ){
 			$this->facebookPageUrlData = parse_url( $this->facebookPage );
 
@@ -82,9 +81,10 @@ class GetFacebookLiveStream
 			$this->pageID = $path_exploded[1];
 			//debug( $path_exploded[1] );
 
-		} else if( is_numeric( $this->facebookPage ) ){
+		} else {
 			$this->pageID = $this->facebookPage;
 		}
+
 
 		$this->queryData = array(
 			"fields" => "live_status,description,picture,from,created_time,permalink_url",
