@@ -61,6 +61,27 @@ $FacebookLive = new GetFacebookLiveStream([
   </div>
 </section>
 
+
+<section class="section">
+  <div class="container has-text-centered">
+
+    <form action="/" method="get" class="columns">
+
+      <div class="field inline-block is-grouped column is-6 is-offset-3">
+        <p class="control is-expanded">
+          <input class="input inline is-large" type="text" name="stream" placeholder="facebook.com/redbull">
+        </p>
+        <p class="control">
+          <input class="button inline is-large" type="submit" value="Submit">
+        </p>
+      </div>
+
+    </form>
+
+  </div>
+</section>
+
+
 <section class="section">
   <div class="container">
 
