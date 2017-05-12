@@ -1,0 +1,21 @@
+{
+  "name": "facebook-live-embed",
+  "version": "1.0.0",
+  "description": "Gets current or latest live stream from a Facebook page",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "tbd"
+  },
+  "keywords": [
+    "facebook",
+    "live",
+    "embed",
+    "stream"
+  ],
+  "author": "Sam Carlton",
+  "license": "MIT"
+}
