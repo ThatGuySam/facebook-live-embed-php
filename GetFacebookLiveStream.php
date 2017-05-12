@@ -25,15 +25,6 @@ class GetFacebookLiveStream
 	public $eventType;
 	public $type;
 
-	public $default_embed_width;
-	public $default_embed_height;
-	public $default_ratio;
-
-	public $embed_code; // contain the embed code
-	public $embed_autoplay;
-	public $embed_width;
-	public $embed_height;
-
 	public $loaded_video_id;
 	public $loaded_video_title;
 	public $loaded_video_description;
@@ -62,13 +53,6 @@ class GetFacebookLiveStream
 		$this->getTokenAddress = "https://graph.facebook.com/oauth/access_token?";
 
 		$this->videoPluginAddress = "https://www.facebook.com/plugins/video.php?";
-
-		$this->default_embed_width = "560";
-		$this->default_embed_height = "315";
-		$this->default_ratio = $this->default_embed_width / $this->default_embed_height;
-
-		$this->embed_width = $this->default_embed_width;
-		$this->embed_height = $this->default_embed_height;
 
 		$this->embed_autoplay = true;
 
@@ -112,8 +96,8 @@ class GetFacebookLiveStream
 
 		$this->liveStreamResponse = $this->getFacebookRequest( $this->liveStreamsRequestPath );
 
-		$this->liveStreamIds = array();
-		$this->vodStreamIds = array();
+		$this->liveStreams = array();
+		$this->vodStreams = array();
 
 		foreach( $this->liveStreamResponse as $graphNode ){
 
@@ -153,8 +137,6 @@ class GetFacebookLiveStream
 		$this->channel_title = $this->loaded_video->getField('from')->getField('name');
 
 		$this->loaded_video_url = 'https://www.facebook.com' . $this->loaded_video->getField('permalink_url');
-
-		$this->embedCode();
 
 		//return $this->liveStreamResponse;
 	}
@@ -285,24 +267,6 @@ class GetFacebookLiveStream
 		}
 	}
 
-	public function setEmbedSizeByWidth($width, $refill_code = true)
-	{
-		$ratio = $this->default_embed_width / $this->default_embed_height;
-		$this->embed_width = $width;
-		$this->embed_height = $width / $ratio;
-
-		if( $refill_code == true ) { $this->embedCode(); }
-	}
-
-	public function setEmbedSizeByHeight($height, $refill_code = true)
-	{
-                $ratio = $this->default_embed_width / $this->default_embed_height;
-                $this->embed_height = $height;
-                $this->embed_width = $height * $ratio;
-
-		if( $refill_code == true ) { $this->embedCode(); }
-	}
-
 	public function getEmbedAddress( $autoplay = true )
 	{
 
@@ -319,23 +283,6 @@ class GetFacebookLiveStream
 
 	}
 
-
-	public function embedCode()
-	{
-		$autoplay = $this->embed_autoplay ? "?autoplay=1" : "";
-
-		$this->embed_code = <<<EOT
-<iframe
-	width="{$this->embed_width}"
-	height="{$this->embed_height}"
-	src="//www.youtube.com/embed/{$this->loaded_video_id}{$autoplay}"
-	frameborder="0"
-	allowfullscreen>
-</iframe>
-EOT;
-
-		return $this->embed_code;
-	}
 }
 
 ?>
