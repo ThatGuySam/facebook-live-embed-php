@@ -39,7 +39,6 @@ class GetFacebookLiveStream
 
 	public function __construct($args)
 	{
-		debug( $args );
 
 		$this->facebookPage 	= isset( $args['facebook_page'] ) ? $args['facebook_page'] : 0;
 		$this->APP_Id					= isset( $args['app_id'] ) ? $args['app_id'] : 0;
