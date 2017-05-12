@@ -21,9 +21,15 @@ class GetFacebookLiveStream
 
 	public $queryString; // Address + Data to request
 
-	public $part;
-	public $eventType;
-	public $type;
+	public $default_embed_width;
+	public $default_embed_height;
+	public $default_ratio;
+
+	public $embed_code; // contain the embed code
+	public $embed_autoplay;
+	public $embed_width;
+	public $embed_height;
+	public $embed_ratio;
 
 	public $loaded_video_id;
 	public $loaded_video_title;
@@ -44,6 +50,13 @@ class GetFacebookLiveStream
 		$this->APP_Id					= isset( $args['app_id'] ) ? $args['app_id'] : 0;
 		$this->APP_Secret 		= isset( $args['app_secret'] ) ? $args['app_secret'] : 0;
 		$autoQuery 						= isset( $args['auto_query'] ) ? $args['auto_query'] : true;
+
+		$this->default_embed_width = "640";
+		$this->default_embed_height = "360";
+		$this->default_ratio = $this->default_embed_width / $this->default_embed_height;
+
+		$this->embed_width = $this->default_embed_width;
+		$this->embed_height = $this->default_embed_height;
 
 		$this->embed_autoplay = false;//by default
 
@@ -74,8 +87,8 @@ class GetFacebookLiveStream
 			// Break up path into parts
 			$path_exploded = explode( "/", $this->facebookPageUrlData['path'] );
 
+			// Set id as first part of url path
 			$this->pageID = $path_exploded[1];
-			//debug( $path_exploded[1] );
 
 		} else {
 			$this->pageID = $this->facebookPage;
@@ -83,7 +96,7 @@ class GetFacebookLiveStream
 
 
 		$this->queryData = array(
-			"fields" => "live_status,description,picture,from,created_time,permalink_url",
+			"fields" => "live_status,description,picture,from,created_time,permalink_url,format",
 		);
 		$this->getQuery = http_build_query($this->queryData); // transform array of data in url query
 		$this->liveStreamsRequestPath = '/' . $this->pageID . '/videos?' . $this->getQuery;
@@ -129,7 +142,18 @@ class GetFacebookLiveStream
 		$this->loaded_video_thumb_default = $this->loaded_video->getField('picture');
 		// $this->loaded_video_thumb_medium = $this->objectResponse->items[0]->snippet->thumbnails->medium->url;
 		// $this->loaded_video_thumb_high = $this->objectResponse->items[0]->snippet->thumbnails->high->url;
-		//
+
+		$this->loaded_video_formats = $this->loaded_video->getField('format')->asArray();
+		$this->loaded_video_native_format = end($this->loaded_video_formats);
+
+		// Get dimensions and set to portrait if 0
+		$this->embed_width = $this->loaded_video_native_format['width'] ? $this->loaded_video_native_format['width'] : 720;
+		$this->embed_height = $this->loaded_video_native_format['height'] ? $this->loaded_video_native_format['height'] : 1280;
+		$this->embed_ratio =  $this->embed_height / $this->embed_width;
+		$this->embed_ratio_percent = round((float)$this->embed_ratio * 100 , 2) . '%';
+		$this->embed_orientation = ( $this->embed_height > $this->embed_width ) ? 'portrait' : 'landscape';
+
+
 		$this->channel_title = $this->loaded_video->getField('from')->getField('name');
 
 		$this->loaded_video_url = 'https://www.facebook.com' . $this->loaded_video->getField('permalink_url');
@@ -278,7 +302,33 @@ class GetFacebookLiveStream
 		return $this->videoPluginAddress . $this->getembedAddressQuery;
 
 	}
+	public function embedCode()
+	{
+
+		$responsive_wrapper_styles = "padding-top: $this->embed_ratio_percent;position: relative; display: block; width: 100%; overflow: hidden;";
+
+		//'max-width: 300px; margin: 0 auto;';
+
+		if( $this->embed_orientation == 'portrait' ){
+			$container_styles = 'width: 30%; margin: 0 auto;';
+		} else {
+			$container_styles = '';
+		}
+
+		ob_start(); ?>
+
+			<div class="fb-live-embed fb-live-embed__container is-<?= $this->embed_orientation ?>" style="<?= $container_styles ?>">
+				<div class="fb-live-embed__embed-responsive" style="<?= $responsive_wrapper_styles ?>">
+					<iframe
+						src="<?= $this->getEmbedAddress() ?>"
+						scrolling="no"
+						frameborder="0"
+						webkitallowfullscreen="1" mozallowfullscreen="1" allowfullscreen="1"
+						style="border:none;overflow:hidden;position: absolute; top: 0; bottom: 0; left: 0; width: 100%; height: 100%; border: 0;"></iframe>
+				</div>
+			</div>
+
+		<?php return ob_get_clean();
+	}
 
 }
-
-?>

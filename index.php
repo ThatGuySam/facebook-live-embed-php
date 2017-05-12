@@ -41,18 +41,6 @@ $FacebookLive = new GetFacebookLiveStream([
 			/*overflow: hidden;*/
 		}
 
-		.is-16by9 iframe {
-      position: absolute;
-
-      bottom: 0;
-      left: 0;
-      right: 0;
-      top: 0;
-      height: 100%;
-      width: 100%;
-      display: block;
-		}
-
 	</style>
 
 </head>
@@ -64,9 +52,7 @@ $FacebookLive = new GetFacebookLiveStream([
     <div class="columns">
       <div class="column is-8 is-offset-2">
 
-        <figure class="image is-16by9">
-          <iframe frameborder="0" src="<?= $FacebookLive->getEmbedAddress() ?>" data-php-live="" data-current-url="archive" data-live="" data-archive="https://player.vimeo.com/video/216945799?title=0&byline=0&portrait=0&color=d8d8d8&api=1&player_id=frame" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-        </figure>
+        <?= $FacebookLive->embedCode() ?>
 
       </div>
     </div>
@@ -96,6 +82,13 @@ $FacebookLive = new GetFacebookLiveStream([
          <div class="content">
            <strong>When was it started</strong><br><br>
            <?= debug( $FacebookLive->loaded_video_published_at ); ?>
+         </div>
+      </div>
+
+      <div class="media">
+         <div class="content">
+           <strong>What orientation is it</strong><br><br>
+           <?= debug( $FacebookLive->embed_orientation ); ?>
          </div>
       </div>
 
