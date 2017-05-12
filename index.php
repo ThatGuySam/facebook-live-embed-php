@@ -72,7 +72,7 @@ $FacebookLive = new GetFacebookLiveStream([
           <input class="input inline is-large" type="text" name="stream" placeholder="Paste an FB page url" value="<?= @$_GET['stream'] ?>">
         </p>
         <p class="control">
-          <input class="button inline is-large" type="submit" value="Submit">
+          <input class="button inline is-large" type="submit" value="Get Stream">
         </p>
       </div>
 
