@@ -13,7 +13,7 @@ function debug( $thing ) {
 
 	ob_start();
 
-	?><pre><?php var_dump($thing); ?></pre><?php
+	?><pre class="notification is-dark"><?php var_dump($thing); ?></pre><?php
 
 	$output = ob_get_clean();
 
