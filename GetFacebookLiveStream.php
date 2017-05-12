@@ -50,6 +50,7 @@ class GetFacebookLiveStream
 		$this->APP_Id					= isset( $args['app_id'] ) ? $args['app_id'] : 0;
 		$this->APP_Secret 		= isset( $args['app_secret'] ) ? $args['app_secret'] : 0;
 		$autoQuery 						= isset( $args['auto_query'] ) ? $args['auto_query'] : true;
+		$this->stream_expires		= isset( $args['cache_stream_for'] ) ? $args['cache_stream_for'] : 60;
 
 		$this->default_embed_width = "640";
 		$this->default_embed_height = "360";
@@ -234,7 +235,7 @@ class GetFacebookLiveStream
 	}
 
 
-	public function getFacebookRequest( $path, $expires = 60 )
+	public function getFacebookRequest( $path )
 	{
 
 		global $InstanceCache;
@@ -249,7 +250,7 @@ class GetFacebookLiveStream
 
 			$requested_data = $this->requestFacebookResource( $path );
 
-			$CachedString->set($requested_data)->expiresAfter( $expires );//in seconds, also accepts Datetime
+			$CachedString->set($requested_data)->expiresAfter( $this->stream_expires );//in seconds, also accepts Datetime
 			$InstanceCache->save($CachedString); // Save the cache item just like you do with doctrine and entities
 
 	    $output = $CachedString->get();

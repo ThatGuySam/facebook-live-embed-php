@@ -15,6 +15,7 @@ $FacebookLive = new GetFacebookLiveStream([
   'facebook_page' => $fb_page,
   'app_id' => FB_APP_ID,
   'app_secret' => FB_APP_SECRET,
+  'cache_stream_for' => 60,
 ]);
 
 ?><!doctype html>
