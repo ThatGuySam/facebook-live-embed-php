@@ -80,7 +80,7 @@ $FacebookLive = new GetFacebookLiveStream([
       <div class="media">
         <br>
         <div class="content">
-          <strong>Is is live</strong><br><br>
+          <strong>Is it live</strong><br><br>
           <?= debug( $FacebookLive->isLive() ); ?>
         </div>
       </div>
