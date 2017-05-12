@@ -4,6 +4,10 @@
 
 > Gets current or latest live stream from a Facebook page
 
+[Here's a demo!](http://fblive.samcarlton.com/)
+
+Based on [youtube-live-embed](https://github.com/iacchus/youtube-live-embed)
+
 ## Code Samples
 
 ### Get Embed code
