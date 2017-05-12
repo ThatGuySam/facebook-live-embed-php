@@ -46,11 +46,14 @@ class GetFacebookLiveStream
 
 	public $channel_title;
 
-	public function __construct($facebookPage, $APP_Id, $APP_Secret, $autoQuery = true)
+	public function __construct($args)
 	{
-		$this->facebookPage = $facebookPage;
-		$this->APP_Id = $APP_Id;
-		$this->APP_Secret = $APP_Secret;
+		debug( $args );
+
+		$this->facebookPage 	= isset( $args['facebook_page'] ) ? $args['facebook_page'] : 0;
+		$this->APP_Id					= isset( $args['app_id'] ) ? $args['app_id'] : 0;
+		$this->APP_Secret 		= isset( $args['app_secret'] ) ? $args['app_secret'] : 0;
+		$autoQuery 						= isset( $args['auto_query'] ) ? $args['auto_query'] : true;
 
 		$this->part = "id,snippet";
 		$this->eventType = "live";

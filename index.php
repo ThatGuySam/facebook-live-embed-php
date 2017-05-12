@@ -5,11 +5,13 @@ require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/GetFacebookLiveStream.php';
 
+$FacebookLive = new GetFacebookLiveStream([
+  'facebook_page' => FB_PAGE,
+  'app_id' => FB_APP_ID,
+  'app_secret' => FB_APP_SECRET,
+]);
 
-
-$FacebookLive = new GetFacebookLiveStream(PAGE_ID, FB_APP_ID, FB_APP_SECRET);
-
-debug( $FacebookLive->getEmbedAddress() );
+debug( $FacebookLive );
 
 
 ?><!doctype html>
