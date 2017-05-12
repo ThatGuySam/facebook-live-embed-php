@@ -69,7 +69,7 @@ $FacebookLive = new GetFacebookLiveStream([
 
       <div class="field inline-block is-grouped column is-6 is-offset-3">
         <p class="control is-expanded">
-          <input class="input inline is-large" type="text" name="stream" placeholder="facebook.com/redbull">
+          <input class="input inline is-large" type="text" name="stream" placeholder="Paste an FB page url">
         </p>
         <p class="control">
           <input class="button inline is-large" type="submit" value="Submit">
