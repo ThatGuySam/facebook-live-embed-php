@@ -74,16 +74,6 @@ function isValidUrl( $url ) {
 	return isset( $parsed_url['host'] );
 }
 
-function getSSLPage($url) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSLVERSION,3);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return $result;
-}
-
 
 function startsWith($haystack, $needle)
 {
@@ -115,41 +105,6 @@ function validateJson($strJson) {
     return $output;
 }
 
-
-
-//Bootstrap column class
-function bootstrapClass($columns_arg) {
-
-	$columns = intval( $columns_arg );
-
-	$min = 1;
-	$max = 12;
-
-	//Is between 1 & 12
-	if ($columns >= $min && $columns <= $max){
-		$bs_col_width = round( 12 / $columns );
-	} else {
-		$bs_col_width = 1;
-	}
-
-	$bs_col_class = 'col-sm-'.$bs_col_width;
-
-	return $bs_col_class;
-}
-
-
-
-function generateRandomString($length = 10) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-
-
 function in_object($string, $object){
 	foreach( $object as $item => $item_value ){
 
@@ -165,138 +120,6 @@ function in_object($string, $object){
 
 	return false;
 }
-
-
-
-
-//Generate a Contrasting color
-function getContrastingColor($hexcolor){
-    //24ways.org/2010/calculating-color-contrast/
-
-    //Simple
-    //return (hexdec(trim($hexcolor,'#')) > 0xffffff/2) ? '323232':'d8d8d8';
-
-    //YIQ
-    $hexcolor = trim($hexcolor,'#');//Strip pounds
-    $r = hexdec(substr($hexcolor,0,2));
-	$g = hexdec(substr($hexcolor,2,2));
-	$b = hexdec(substr($hexcolor,4,2));
-	$yiq = (($r*299)+($g*587)+($b*114))/1000;
-	return ($yiq >= 128) ? '323232' : 'd8d8d8';
-}
-
-//Generate average brightness from a file(Good for setting a contrasting color in front of it)
-function get_avg_luminance($filename, $num_samples=10) {
-    $img = imagecreatefromjpeg($filename);
-
-    $width = imagesx($img);
-    $height = imagesy($img);
-
-    $x_step = intval($width/$num_samples);
-    $y_step = intval($height/$num_samples);
-
-    $total_lum = 0;
-
-    $sample_no = 1;
-
-    for ($x=0; $x<$width; $x+=$x_step) {
-        for ($y=0; $y<$height; $y+=$y_step) {
-
-            $rgb = imagecolorat($img, $x, $y);
-            $r = ($rgb >> 16) & 0xFF;
-            $g = ($rgb >> 8) & 0xFF;
-            $b = $rgb & 0xFF;
-
-            // choose a simple luminance formula from here
-            // http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-            $lum = ($r+$r+$b+$g+$g+$g)/6;
-
-            $total_lum += $lum;
-
-            $sample_no++;
-        }
-    }
-
-    // work out the average
-    $avg_lum  = $total_lum/$sample_no;
-    return $avg_lum;
-    // assume a medium gray is the threshold, #acacac or RGB(172, 172, 172)
-    // this equates to a luminance of 170
-}
-
-
-
-function cleanPostDate($arg_post_date) {
-
-	//Detect if it's already UTC
-	if( true == is_numeric($arg_post_date) &&  0 != $arg_post_date ){
-
-		//Post date is good to go
-		$post_date = $arg_post_date;
-
-	} else {//Parse non-UTC date int UTC
-
-		//Try to read post date an time string
-		$post_date = strtotime( $arg_post_date );
-
-	}
-
-	//If it's still not valid then stop
-	if( false == $post_date || 0 == $post_date ){ return false; }
-
-	//https://codex.wordpress.org/Function_Reference/current_time
-	$wordpress_local_time = current_time( 'U' );//Local time in wordpress
-	$an_hour = 60 * 60;//60 seconds times 60 minutes
-	$a_day = $an_hour * 24;
-
-
-	//debug( $post_date >= strtotime( '1 hour ago', $wordpress_local_time ) );
-
-	if( $post_date >= strtotime( '-1 hour', $wordpress_local_time ) ){//If less than 1 hour hours
-		//Minute Format - 5 min ago
-
-		$minutes_since = round( abs($wordpress_local_time - $post_date) / 60 );
-
-		$output_date = $minutes_since.' mins ago';
-
-	} else if( date('d/m/Y', $post_date ) == date('d/m/Y', $wordpress_local_time) ){//If it's from today
-		//Hour Format - 5 hrs ago
-
-		$hours_since = round( abs($wordpress_local_time - $post_date) / $an_hour );
-
-		$output_date = $hours_since.' hrs ago';
-
-	} else if( date('d/m/Y', $post_date ) == date('d/m/Y', $wordpress_local_time - $a_day) ){//If Yesterday
-
-		$output_date = 'Yesterday';
-
-	} else if( date('W/Y', $post_date ) == date('W/Y', $wordpress_local_time) ){//If from this week
-		//Format - Sunday
-
-		$output_date = date('l', $post_date );
-
-	} else if( date('Y', $post_date ) == date('Y', $wordpress_local_time) ){//If from this year
-		//Format - August 8
-
-		$output_date = date('F j', $post_date);
-
-	} else {//Pretty much if it's older than this year
-		//Format - August 8 1992
-
-		$output_date = date('F j Y', $post_date);
-
-	}
-
-	//19 hrs ago(If less than 24 hours)
-	//Yesterday(If date is yesterday)
-	//2 days ago(If from this week)
-	//Aug 3(If from this year)
-	//Dec 31st 2015(If all else)
-
-	return $output_date;
-
-}
-
 
 
 
