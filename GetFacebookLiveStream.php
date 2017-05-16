@@ -148,8 +148,8 @@ class GetFacebookLiveStream
 		$this->loaded_video_native_format = end($this->loaded_video_formats);
 
 		// Get dimensions and set to portrait if 0
-		$this->embed_width = $this->loaded_video_native_format['width'] ? $this->loaded_video_native_format['width'] : 720;
-		$this->embed_height = $this->loaded_video_native_format['height'] ? $this->loaded_video_native_format['height'] : 1280;
+		$this->embed_width = $this->loaded_video_native_format['width'] ? $this->loaded_video_native_format['width'] : 1280;
+		$this->embed_height = $this->loaded_video_native_format['height'] ? $this->loaded_video_native_format['height'] : 720;
 		$this->embed_ratio =  $this->embed_height / $this->embed_width;
 		$this->embed_ratio_percent = round((float)$this->embed_ratio * 100 , 2) . '%';
 		$this->embed_orientation = ( $this->embed_height > $this->embed_width ) ? 'portrait' : 'landscape';
