@@ -52,12 +52,15 @@ class GetFacebookLiveStream
 		$autoQuery 						= isset( $args['auto_query'] ) ? $args['auto_query'] : true;
 		$this->stream_expires		= isset( $args['cache_stream_for'] ) ? $args['cache_stream_for'] : 60;
 
-		$this->default_embed_width = "640";
-		$this->default_embed_height = "360";
+		$this->default_embed_width = "1280";
+		$this->default_embed_height = "720";
 		$this->default_ratio = $this->default_embed_width / $this->default_embed_height;
 
 		$this->embed_width = $this->default_embed_width;
 		$this->embed_height = $this->default_embed_height;
+
+		$this->embed_ratio =  $this->embed_height / $this->embed_width;
+		$this->embed_ratio_percent = round((float)$this->embed_ratio * 100 , 2) . '%';
 
 		$this->embed_autoplay = false;//by default
 
@@ -148,11 +151,10 @@ class GetFacebookLiveStream
 		$this->loaded_video_native_format = end($this->loaded_video_formats);
 
 		// Get dimensions and set to portrait if 0
-		$this->embed_width = $this->loaded_video_native_format['width'] ? $this->loaded_video_native_format['width'] : 1280;
-		$this->embed_height = $this->loaded_video_native_format['height'] ? $this->loaded_video_native_format['height'] : 720;
-		$this->embed_ratio =  $this->embed_height / $this->embed_width;
-		$this->embed_ratio_percent = round((float)$this->embed_ratio * 100 , 2) . '%';
-		$this->embed_orientation = ( $this->embed_height > $this->embed_width ) ? 'portrait' : 'landscape';
+
+		$this->loaded_video_width = $this->loaded_video_native_format['width'] ? $this->loaded_video_native_format['width'] : 1280;
+		$this->loaded_video_height = $this->loaded_video_native_format['height'] ? $this->loaded_video_native_format['height'] : 720;
+		$this->embed_orientation = ( $this->loaded_video_height > $this->loaded_video_width ) ? 'portrait' : 'landscape';
 
 
 		$this->channel_title = $this->loaded_video->getField('from')->getField('name');
@@ -296,7 +298,9 @@ class GetFacebookLiveStream
 			"show_text" => 0,
 			"autoplay" => $this->embed_autoplay,
 			"allowfullscreen" => 1,
-			"show_captions" => 0
+			"show_captions" => 0,
+			"width" => $this->embed_width,
+			"height" => $this->embed_height
 		);
 		$this->getembedAddressQuery = http_build_query($this->embedAddressQueryData); // transform array of data in url query
 
@@ -308,17 +312,9 @@ class GetFacebookLiveStream
 
 		$responsive_wrapper_styles = "padding-top: $this->embed_ratio_percent;position: relative; display: block; width: 100%; overflow: hidden;";
 
-		//'max-width: 300px; margin: 0 auto;';
-
-		if( $this->embed_orientation == 'portrait' ){
-			$container_styles = 'width: 30%; margin: 0 auto;';
-		} else {
-			$container_styles = '';
-		}
-
 		ob_start(); ?>
 
-			<div class="fb-live-embed fb-live-embed__container is-<?= $this->embed_orientation ?>" style="<?= $container_styles ?>">
+			<div class="fb-live-embed fb-live-embed__container is-<?= $this->embed_orientation ?>">
 				<div class="fb-live-embed__embed-responsive" style="<?= $responsive_wrapper_styles ?>">
 					<iframe
 						src="<?= $this->getEmbedAddress() ?>"
