@@ -19,14 +19,9 @@ This generates the embed code for you with respect to width and height of the li
 ```
 
 ### Get Embed URL
-This generates the embed code for you with respect to width and height of the livestream(ie: Portrait live streams from phones)
+This just get the embed url so you can use it more custom ways
 ```php
-<?php
-
-    $embed_url = $FacebookLive->getEmbedAddress();
-
-?>
-
+<iframe src="<?= $FacebookLive->getEmbedAddress() ?>" frameborder="0" allowfullscreen></iframe>
 ```
 
 ## Installation
