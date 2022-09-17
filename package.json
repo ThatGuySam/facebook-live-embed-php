@@ -4,7 +4,7 @@
   "description": "Gets current or latest live stream from a Facebook page",
   "main": "index.php",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
