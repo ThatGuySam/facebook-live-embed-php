@@ -17,5 +17,8 @@
     "stream"
   ],
   "author": "Sam Carlton",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "^0.23.2"
+  }
 }
