@@ -126,11 +126,6 @@ export function parseResponseParts ( response: AxiosResponse, identifier: string
     }
 }
 
-
-interface CheckLiveOptions {
-    identifiers: Map<string, string>
-}
-
 export class YouTubeCheckLive extends CheckLive {
 
     async checkLive ( name, identifier ) {
