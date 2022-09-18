@@ -45,19 +45,6 @@ const liveChannels = new Map([
     // [ 'HowCommunicationWorks', 'HowCommunicationWorks' ],
 ])
 
-function normalResponseUrl ( url: string, wordsToReplace: Array<string> ) {
-
-    // Make a relative url
-    const origin = new URL( url ).origin
-
-    const relativeUrl = url.replace( origin, '' )
-
-    return wordsToReplace.reduce( ( relativeUrl: string, word: string ) => {
-        return relativeUrl.replace( word, '' )
-    }, relativeUrl )
-    
-}
-
 test( 'Can detect live channels', async () => {
 
     const liveCheck = new YouTubeCheckLive({

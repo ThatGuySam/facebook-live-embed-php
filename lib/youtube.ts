@@ -59,6 +59,19 @@ export function makeYouTubeUrl ( parts:any ) {
     return url.toString()
 }
 
+function normalizeResponseUrl ( url: string, wordsToReplace: Array<string> ) {
+
+    // Make a relative url
+    const origin = new URL( url ).origin
+
+    const relativeUrl = url.replace( origin, '' )
+
+    return wordsToReplace.reduce( ( relativeUrl: string, word: string ) => {
+        return relativeUrl.replace( word, '' )
+    }, relativeUrl )
+    
+}
+
 function parseCookieValues ( value: Array<string> ) {
     return value.map( ( cookie: string ) => {
         // Split by semicolons
@@ -119,9 +132,9 @@ export function parseResponseParts ( response: AxiosResponse, identifier: string
     
     return {
         headers: Object.fromEntries( responseHeaders ),
-        // redirectCount: response.request._redirectable._redirectCount,
-        // redirects: response.request._redirectable._redirects,
-        // responseUrl: normalResponseUrl( response.request.res.responseUrl, [ identifier ] ),
+        redirectCount: response.request._redirectable._redirectCount,
+        redirects: response.request._redirectable._redirects,
+        responseUrl: normalizeResponseUrl( response.request.res.responseUrl, [ identifier ] ),
         // fetchedUrls: response.request.res.fetchedUrls,
     }
 }
