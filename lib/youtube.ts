@@ -3,6 +3,8 @@ import axios, { AxiosResponse } from 'axios'
 import { registerInterceptor } from 'axios-cached-dns-resolve'
 import httpTimer from '@szmarczak/http-timer'
 
+import { CheckLive } from './check-live'
+
 const youTubeAxiosConfig:any = {
     // transport: {
     //     // request: function httpsWithTimer(...args) {
@@ -129,14 +131,7 @@ interface CheckLiveOptions {
     identifiers: Map<string, string>
 }
 
-export interface YouTubeCheckLive {
-    identifiers: Map<string, string>
-}
-
-export class YouTubeCheckLive {
-    constructor ( options:CheckLiveOptions ) {
-        this.identifiers = options.identifiers
-    }
+export class YouTubeCheckLive extends CheckLive {
 
     async checkLive ( name, identifier ) {
         const url = makeYouTubeUrl( { 
@@ -169,14 +164,4 @@ export class YouTubeCheckLive {
         return parseResponseParts( response, identifier )
     }
 
-    async check () {
-
-        // Run rerquests in parallel
-        // so that timings are as similar as possible
-        const results = await Promise.all( Array.from( this.identifiers ).map( ([ name, identifier ]) => {
-            return this.checkLive( name, identifier )
-        }) )
-
-        return results
-    }
 }
