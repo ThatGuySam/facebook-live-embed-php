@@ -22,6 +22,7 @@
     "vitest": "^0.23.2"
   },
   "dependencies": {
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "axios-cached-dns-resolve": "^3.1.0"
   }
 }
