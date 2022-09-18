@@ -22,6 +22,7 @@
     "vitest": "^0.23.2"
   },
   "dependencies": {
+    "@szmarczak/http-timer": "^5.0.1",
     "axios": "^0.27.2",
     "axios-cached-dns-resolve": "^3.1.0"
   }
