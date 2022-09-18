@@ -24,6 +24,7 @@ export const youTubeAxios = axios.create( youTubeAxiosConfig )
 // so that DNS for our subsequent requests will be cached
 registerInterceptor(youTubeAxios)
 
+const pixelUA = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36'
 
 const liveIgnoredValues = new Set([
     'VISITOR_INFO1_LIVE',
@@ -120,5 +121,62 @@ export function parseResponseParts ( response: AxiosResponse, identifier: string
         // redirects: response.request._redirectable._redirects,
         // responseUrl: normalResponseUrl( response.request.res.responseUrl, [ identifier ] ),
         // fetchedUrls: response.request.res.fetchedUrls,
+    }
+}
+
+
+interface CheckLiveOptions {
+    identifiers: Map<string, string>
+}
+
+export interface YouTubeCheckLive {
+    identifiers: Map<string, string>
+}
+
+export class YouTubeCheckLive {
+    constructor ( options:CheckLiveOptions ) {
+        this.identifiers = options.identifiers
+    }
+
+    async checkLive ( name, identifier ) {
+        const url = makeYouTubeUrl( { 
+            base: 'https://www.youtube.com',
+
+            pathname: `/channel/${ identifier }/live`,
+
+            // /channel/UCHd62-u_v4DvJ8TCFtpi4GA/videos?view=2&sort=dd&live_view=501&shelf_id=0
+            // pathname: `/channel/${ identifier }/videos`,
+            // search: 'view=2&sort=dd&live_view=501&shelf_id=0'
+
+
+            // pathname: `/c/${ identifier }/live`,
+
+            // pathname: `/${ identifier }/live`,
+        } )
+
+
+        console.log( 'fetching', name, url )
+
+        const response = await youTubeAxios.head( url, {
+            headers: { 'user-agent': pixelUA }
+        } )
+        .catch( ( error ) => {
+            // console.log( 'error', error )
+
+            return error.response
+        } )
+
+        return parseResponseParts( response, identifier )
+    }
+
+    async check () {
+
+        // Run rerquests in parallel
+        // so that timings are as similar as possible
+        const results = await Promise.all( Array.from( this.identifiers ).map( ([ name, identifier ]) => {
+            return this.checkLive( name, identifier )
+        }) )
+
+        return results
     }
 }
