@@ -25,6 +25,6 @@
     "@szmarczak/http-timer": "^5.0.1",
     "axios": "^0.27.2",
     "axios-cached-dns-resolve": "^3.1.0",
-    "vite": "^3.1.2"
+    "vite": "^3.2.7"
   }
 }
